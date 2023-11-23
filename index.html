@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>💼 Problema de la Mochila</title>
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f3f4f6;
+    }
+    .card{
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container card card-body">
+  <h1 class="mt-4 mb-4">💼 Problema de la Mochila</h1>
+  <h5><b>Por:</b> Tomas Felipe Jimenez Medina y Anthony Ramos Camacho</h5>
+  <!--Basado en: https://www.youtube.com/watch?v=IZHvQTx2bZ0 -->
+  <hr>
+  <div class="card">
+    <div class="card-header">
+      📝 Formulario agregar artículos
+    </div>
+    <div class="card-body">
+      <form>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="nombreArticulo">Nombre del Artículo:</label>
+            <input type="text" class="form-control" id="nombreArticulo" placeholder="Nombre">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="cantidadArticulo">Cantidad:</label>
+            <input type="number" class="form-control" id="cantidadArticulo" placeholder="Cantidad">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="pesoArticulo">Peso:</label>
+            <input type="number" class="form-control" id="pesoArticulo" placeholder="Peso">
+          </div>
+        </div>
+    
+        <button type="button" class="btn btn-success mb-3" onclick="agregarArticulo()">Agregar a la Lista</button>
+      </form>
+    </div>
+  </div>
+  <div class="card" id="listadearticulos" style="display: none;">
+    <div class="card-header">
+      📄 Lista de Artículos
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Peso</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="listaArticulosBody">
+          <!-- Aquí se mostrará la lista de artículos -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card" id="formulariomochila" style="display: none;">
+    <div class="card-header">
+      📝 Formulario mochila
+    </div>
+    <div class="card-body">
+      <form>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="capacidad">Capacidad de la mochila:</label>
+            <input type="number" class="form-control" id="capacidad" placeholder="Ingrese la capacidad">
+          </div>
+          <div class="form-group col-md-6">
+            <button type="button" class="btn btn-success mt-4" onclick="resolverMochila()">Resolver Mochila</button>
+          </div>
+        </div>
+      </form>
+  </div>     
+</div>
+<div class="card" id="pasoapaso" style="display: none;">
+  <div class="card-header">
+    👨‍🏫 Paso a Paso
+  </div>
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr id="pasoAPasoCapacidades">
+          <th scope="col">Paso</th>
+          <!-- Agregar columnas dinámicamente según la capacidad de la mochila -->
+        </tr>
+      </thead>
+      <tbody id="pasoAPasoBody">
+        <!-- Aquí se mostrará el paso a paso -->
+      </tbody>
+    </table>
+</div>     
+</div> 
+  <div class="alert alert-success" id="resultadofinal" style="display: none;" role="alert">
+    <h2 class="alert-heading">🚆 Resultado</h2>
+    <div class="card">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Artículo</th>
+              <th scope="col">Cantidad</th>
+              <th scope="col">Peso</th>
+            </tr>
+          </thead>
+          <tbody id="resultadoBody">
+            <!-- Aquí se mostrará el resultado -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  const articulos = [];
+
+  function agregarArticulo() {
+    document.getElementById('listadearticulos').style.display = 'block';
+    document.getElementById('formulariomochila').style.display = 'block';
+    const nombre = document.getElementById('nombreArticulo').value;
+    const cantidad = parseInt(document.getElementById('cantidadArticulo').value);
+    const peso = parseInt(document.getElementById('pesoArticulo').value);
+
+    if (nombre && !isNaN(cantidad) && !isNaN(peso)) {
+      articulos.push({ nombre, cantidad, peso });
+
+      mostrarListaArticulos();
+
+      // Limpiar los campos de entrada
+      document.getElementById('nombreArticulo').value = '';
+      document.getElementById('cantidadArticulo').value = '';
+      document.getElementById('pesoArticulo').value = '';
+    } else {
+      alert('Por favor, complete todos los campos correctamente.');
+    }
+  }
+
+  function eliminarArticulo(index) {
+    articulos.splice(index, 1);
+    mostrarListaArticulos();
+  }
+
+  function mostrarListaArticulos() {
+    const listaArticulosBody = document.getElementById('listaArticulosBody');
+    listaArticulosBody.innerHTML = '';
+
+    articulos.forEach((articulo, index) => {
+      const row = `
+        <tr>
+          <td>${articulo.nombre}</td>
+          <td>${articulo.cantidad}</td>
+          <td>${articulo.peso}</td>
+          <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarArticulo(${index})">Eliminar</button></td>
+        </tr>
+      `;
+      listaArticulosBody.innerHTML += row;
+    });
+  }
+
+  function resolverMochila() {
+    document.getElementById('pasoapaso').style.display = 'block';
+    document.getElementById('resultadofinal').style.display = 'block';
+
+    const capacidad = parseInt(document.getElementById('capacidad').value);
+    const n = articulos.length;
+    const matriz = Array.from({ length: n + 1 }, () => Array(capacidad + 1).fill(0));
+
+    // Lógica de la programación dinámica para el problema de la mochila
+    for (let i = 1; i <= n; i++) {
+      for (let w = 0; w <= capacidad; w++) {
+        if (articulos[i - 1].cantidad <= w) {
+          matriz[i][w] = Math.max(matriz[i - 1][w], matriz[i - 1][w - articulos[i - 1].cantidad] + articulos[i - 1].peso);
+          // Si el valor en la matriz cambió, significa que se usó el artículo actual
+        } else {
+          matriz[i][w] = matriz[i - 1][w];
+        }        
+      }
+    }
+    // Actualizar las columnas de capacidad en la tabla de Paso a Paso
+    actualizarColumnasCapacidad(capacidad);
+
+    // Mostrar el paso a paso
+    const pasoAPasoBody = document.getElementById('pasoAPasoBody');
+    pasoAPasoBody.innerHTML = '';
+    for (let i = 0; i <= n; i++) {
+      const row = `<tr><td>${i}</td><td>`;
+      //const row2 = `<hr><div class="alert alert-success" role="alert">${nombresEnPaso ? `${nombresEnPaso}` : 'Ninguno'}</div>`;
+      //const row3 = row+`${matriz[i].join(row2+'</td><td>')}`;
+      const row3 = row+`${matriz[i].join('</td><td>')}`;
+      const row4 = row3+`</td></tr>`;
+      pasoAPasoBody.innerHTML += row4;
+    }
+
+    // Reconstruir la solución
+    const resultadoBody = document.getElementById('resultadoBody');
+    resultadoBody.innerHTML = '';
+    let i = n;
+    let w = capacidad;
+    while (i > 0 && w > 0) {
+      if (matriz[i][w] !== matriz[i - 1][w]) {
+        const row = `<tr><td>${articulos[i - 1].nombre}</td><td>${articulos[i - 1].cantidad}</td><td>${articulos[i - 1].peso}</td></tr>`;
+        resultadoBody.innerHTML = row + resultadoBody.innerHTML;
+        i--;
+        w -= articulos[i].cantidad;
+      } else {
+        i--;
+      }
+    }
+  }
+
+  // Función para actualizar las columnas de capacidad en la tabla de Paso a Paso
+  function actualizarColumnasCapacidad(capacidad) {
+    const pasoAPasoCapacidades = document.getElementById('pasoAPasoCapacidades');
+    pasoAPasoCapacidades.innerHTML = '';
+
+    const th = document.createElement('th');
+    th.textContent = `Etapa`;
+    pasoAPasoCapacidades.appendChild(th);
+    for (let i = 0; i <= capacidad; i++) {
+      const th = document.createElement('th');
+      th.textContent = `Capacidad ${i}`;
+      pasoAPasoCapacidades.appendChild(th);
+    }
+  }
+</script>
+</body>
+</html>
